@@ -1,23 +1,18 @@
-name: Trigger Tanssi Docs Deploy
+name: Call Deploy Docs
 
 on:
   push:
     branches:
-      - main
-
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to deploy from'
-        required: true
-        default: 'main'
+      - main  # Or adjust as needed for your workflow
 
 jobs:
-  deploy-tanssi-docs:
-    uses: Telucero/workflows/deploy-docs.yml@Central_repo_test
+  call-deploy:
+    uses: Telucero/workflows/.github/workflows/deploy-docs.yml@Central_repo_test  
     with:
-      branch: ${{ github.event.inputs.branch || 'main' }}
-      repository: Telucero/tanssi-docs
-      path: tanssi-docs
-      url_prefix: tanssi-mkdocs
-      submodules: false  # Set to true if you are using submodules
+      branch: main  # Branch to deploy from in the docs repo
+      repository: Telucero/tanssi-docs  
+      path: tanssi-docs  
+      url_prefix: tanssi-mkdocs  
+      submodules: true  # Optional, set to false if not using submodules
+    secrets: inherit  
+#permissions:
