@@ -636,6 +636,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://docs.tanssi.network/node-operators/validators/operational-tasks/proxy-accounts/</loc>
+         <lastmod>2025-04-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://docs.tanssi.network/node-operators/validators/operational-tasks/upgrade-your-node/</loc>
          <lastmod>2025-04-30</lastmod>
          <changefreq>daily</changefreq>
