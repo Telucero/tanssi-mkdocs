@@ -77,9 +77,9 @@ plugins:
         - js/fixCreatedDate.js
         - js/clipboardCopy.js
       css_files:
-        - /assets/stylesheets/tanssi.css
-        - /assets/stylesheets/termynal.css
-        - /assets/stylesheets/timeline-neoteroi.css
+        - assets/stylesheets/tanssi.css
+        - assets/stylesheets/termynal.css
+        - assets/stylesheets/timeline-neoteroi.css
       scoped_css_templates:
         home.html:
           - assets/stylesheets/home.css
