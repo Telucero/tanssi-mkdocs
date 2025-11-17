@@ -1,43 +1,71 @@
 {#-
-    This file was automatically generated - do not edit
-  -#}
-  {% if config.extra.analytics %}
-    {% set feedback = config.extra.analytics.feedback %}
+  This file was automatically generated - do not edit
+-#}
+{% macro _noop(key, lang_code=None) -%}{{ key }}{%- endmacro %}
+{% set translator = _noop %}
+{% set translator_takes_lang = false %}
+{% if trans is defined %}
+  {% set translator = trans %}
+  {% set translator_takes_lang = true %}
+{% elif lang is defined %}
+  {% set translator = lang.t %}
+{% endif %}
+{% set current_lang = 'en' %}
+{% if page is defined and page.lang %}
+  {% set current_lang = page.lang %}
+{% elif config.theme.language %}
+  {% set current_lang = config.theme.language %}
+{% endif %}
+{% macro t(key) -%}
+  {%- if translator_takes_lang -%}
+    {{ translator(key, current_lang) }}
+  {%- else -%}
+    {{ translator(key) }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% if config.extra.analytics %}
+  {% set feedback = config.extra.analytics.feedback %}
+{% endif %}
+{% if page.meta and page.meta.hide %}
+  {% if "feedback" in page.meta.hide %}
+    {% set feedback = None %}
   {% endif %}
-  {% if page.meta and page.meta.hide %}
-    {% if "feedback" in page.meta.hide %}
-      {% set feedback = None %}
-    {% endif %}
-  {% endif %}
-  {% if feedback %}
-    <form class="md-feedback" name="feedback" hidden>
-      <fieldset>
-        <legend class="md-feedback__title">
-          {{ feedback.title }}
-        </legend>
-        <div class="md-feedback__inner">
-          <div class="md-feedback__list">
-            {% for rating in feedback.ratings %}
-              <button class="md-feedback__icon md-icon" type="submit" title="{{ rating.name }}" data-md-value="{{ rating.data }}">
-                {% include ".icons/" ~ rating.icon ~ ".svg" %}
-              </button>
-            {% endfor %}
-          </div>
-          <div class="md-feedback__note">
-            {% for rating in feedback.ratings %}
-              <div data-md-value="{{ rating.data }}" hidden>
-                {% set url = "/" ~ page.url %}
-                {% if page.meta and page.meta.title %}
-                  {% set title = page.meta.title | urlencode %}
-                {% else %}
-                  {% set title = page.title | urlencode %}
-                {% endif %}
-                {{ rating.note.format(url = url, title = title) }}
-              </div>
-            {% endfor %}
-          </div>
+{% endif %}
+{% if feedback %}
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        {{ t(feedback.title) if feedback.title is string else feedback.title }}
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          {% for rating in feedback.ratings %}
+            {% set rating_name = t(rating.name) if rating.name is string else rating.name %}
+            <button class="md-feedback__icon md-icon" type="submit" title="{{ rating_name }}" data-md-value="{{ rating.data }}">
+              {% include ".icons/" ~ rating.icon ~ ".svg" %}
+            </button>
+          {% endfor %}
         </div>
-      </fieldset>
-      <div class="divider"></div> {#- divider -#}
-    </form>
-  {% endif %}
+        <div class="md-feedback__note">
+          {% for rating in feedback.ratings %}
+            <div data-md-value="{{ rating.data }}" hidden>
+              {% set url = "/" ~ page.url %}
+              {% if page.meta and page.meta.title %}
+                {% set title = page.meta.title | urlencode %}
+              {% else %}
+                {% set title = page.title | urlencode %}
+              {% endif %}
+              {% if rating.note %}
+                {% set note_text = t(rating.note) if rating.note is string else rating.note %}
+                {% set note_text = note_text | replace("{url}", url) %}
+                {% set note_text = note_text | replace("{title}", title) %}
+                {{ note_text | safe }}
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </fieldset>
+  </form>
+{% endif %}

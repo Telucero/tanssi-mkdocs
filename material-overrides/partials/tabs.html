@@ -17,7 +17,17 @@
                     <li class="md-tab__item">
                       <a href="{{ section_item.children[0].url | url }}">
                         <div class="icon-col">
-                          {% set icon_url = "/assets/images/dropdown-icons/" + section_item.children[0].url.split('/')[1] + ".webp" %}
+                          {% set child_url = section_item.children[0].url.lstrip('/') %}
+                          {% set icon_seed = 'default' %}
+                          {% if child_url %}
+                            {% set segments = child_url.split('/') %}
+                            {% if segments | length > 1 %}
+                              {% set icon_seed = segments[1] %}
+                            {% else %}
+                              {% set icon_seed = segments[0] %}
+                            {% endif %}
+                          {% endif %}
+                          {% set icon_url = "/assets/images/dropdown-icons/" + icon_seed + ".webp" %}
                           <img class="dropdown-icon" src="{{ icon_url }}" alt="{{ section_item.title }}" loading="lazy">
                         </div>
                         <div class="text-col">
@@ -29,12 +39,22 @@
                     <li class="md-tab__item">
                       <a href="{{ section_item.url | url }}">
                         <div class="icon-col">
-                          {% set icon_url = "/assets/images/dropdown-icons/" + section_item.url.split('/')[1] + ".webp" %}
-                          {% if section_item.title == "About Tanssi" %}
-                            {% set icon_url = "/assets/images/dropdown-icons/about-tanssi.webp" %}
-                          {% elif section_item.title == "Tanssi TestNet" %}
-                            {% set icon_url = "/assets/images/dropdown-icons/tanssi-testnet.webp" %}
+                          {% set normalized_url = section_item.url.lstrip('/') %}
+                          {% set icon_slug = 'default' %}
+                          {% if normalized_url %}
+                            {% set parts = normalized_url.split('/') %}
+                            {% if parts | length > 1 %}
+                              {% set icon_slug = parts[1] %}
+                            {% else %}
+                              {% set icon_slug = parts[0] %}
+                            {% endif %}
                           {% endif %}
+                          {% if 'about-tanssi' in section_item.url %}
+                            {% set icon_slug = 'about-tanssi' %}
+                          {% elif 'tanssi-testnet' in section_item.url %}
+                            {% set icon_slug = 'tanssi-testnet' %}
+                          {% endif %}
+                          {% set icon_url = "/assets/images/dropdown-icons/" + icon_slug + ".webp" %}
                           <img class="dropdown-icon" src="{{ icon_url }}" alt="{{ section_item.title }}" loading="lazy">
                         </div>
                         <div class="text-col">
