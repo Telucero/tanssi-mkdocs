@@ -155,13 +155,17 @@ a:hover {
 
 .language-picker {
   position: relative;
+  margin-left: 0.75rem;
+  min-width: 4.25rem;
 }
 
 .language-picker__toggle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
-  padding: 0.4rem 1rem;
+  padding: 0.3rem 0.75rem;
+  min-width: 3.1rem;
   border-radius: var(--border-radius-pill-button);
   background: var(--rich-black-transparent-30);
   border: 1px solid var(--white-smoke-transparent-20);
@@ -192,11 +196,18 @@ a:hover {
   height: 1.1rem;
 }
 
+.language-picker__label {
+  font-size: 0.92rem;
+  letter-spacing: 0.08em;
+}
+
 .language-picker__menu {
   position: absolute;
   top: calc(100% + 0.5rem);
-  right: 0;
-  width: 12rem;
+  left: 50%;
+  transform: translate(-50%, -5px);
+  width: auto;
+  min-width: 3.25rem;
   background: var(--cod-grey);
   border: 1px solid var(--white-smoke-transparent-20);
   border-radius: 0.75rem;
@@ -213,20 +224,24 @@ a:hover {
 .language-picker:focus-within .language-picker__menu {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
 }
 
 .language-picker__menu ul {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0.25rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .language-picker__menu li a {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 0.4rem 0.85rem;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
   text-decoration: none;
   color: var(--white-smoke);
   font-size: 0.9rem;
@@ -400,6 +415,7 @@ a.md-search-result__link:hover {
 .md-header__buttons {
   display: flex;
   align-items: center;
+  gap: 0.85rem;
   z-index: 3;
   padding-right: 1em;
 }
@@ -1145,7 +1161,7 @@ nav.md-header__inner.md-grid {
 .md-tabs__list {
   display: flex;
   align-items: center;
-  gap: 4rem;
+  gap: 2.5rem;
   contain: none;
   overflow: visible;
 }

@@ -46,10 +46,10 @@
               href="{{ lang_href }}"
               hreflang="{{ alt.lang }}"
               role="menuitem"
+              aria-label="{{ alt.name }}"
               class="{% if alt.lang == current_lang %}is-active{% endif %}"
             >
               <span class="language-picker__code">{{ alt.lang[:2] | upper }}</span>
-              <span class="language-picker__name">{{ alt.name }}</span>
             </a>
           </li>
         {% endfor %}

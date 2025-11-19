@@ -1,7 +1,8 @@
 {#-
     This file was automatically generated - do not edit
   -#}
-  
+{% set current_lang = page.lang | default(config.theme.language) | default("en") %}
+
   <nav class="md-tabs" aria-label="{{ lang.t('tabs') }}" data-md-component="tabs">
     <div class="md-grid">
       <ul class="md-tabs__list">
@@ -20,10 +21,13 @@
                           {% set child_url = section_item.children[0].url.lstrip('/') %}
                           {% set icon_seed = 'default' %}
                           {% if child_url %}
-                            {% set segments = child_url.split('/') %}
+                            {% set segments = child_url.split('/') | reject('equalto', '') | list %}
+                            {% if segments and segments[0] == current_lang %}
+                              {% set segments = segments[1:] %}
+                            {% endif %}
                             {% if segments | length > 1 %}
                               {% set icon_seed = segments[1] %}
-                            {% else %}
+                            {% elif segments | length > 0 %}
                               {% set icon_seed = segments[0] %}
                             {% endif %}
                           {% endif %}
@@ -42,10 +46,13 @@
                           {% set normalized_url = section_item.url.lstrip('/') %}
                           {% set icon_slug = 'default' %}
                           {% if normalized_url %}
-                            {% set parts = normalized_url.split('/') %}
+                            {% set parts = normalized_url.split('/') | reject('equalto', '') | list %}
+                            {% if parts and parts[0] == current_lang %}
+                              {% set parts = parts[1:] %}
+                            {% endif %}
                             {% if parts | length > 1 %}
                               {% set icon_slug = parts[1] %}
-                            {% else %}
+                            {% elif parts | length > 0 %}
                               {% set icon_slug = parts[0] %}
                             {% endif %}
                           {% endif %}

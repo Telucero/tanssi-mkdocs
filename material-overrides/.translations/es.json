@@ -36,5 +36,12 @@
   "home.community.heading.accent": "Dev",
   "home.community.heading.suffix": "de Tanssi",
   "home.community.buttons.discord": "Unirse a Discord",
-  "home.community.buttons.subscribe": "Suscribirse"
+  "home.community.buttons.subscribe": "Suscribirse",
+  "action.edit": "Edit this page",
+  "action.view": "View source",
+  "feedback.title": "Was this page helpful?",
+  "feedback.ratings.helpful.name": "This page was helpful",
+  "feedback.ratings.helpful.note": "Thanks for your feedback!",
+  "feedback.ratings.unhelpful.name": "This page could be improved",
+  "feedback.ratings.unhelpful.note": "Thanks for your feedback! Help us improve this page by submitting <a href=\"https://github.com/moondance-labs/tanssi-docs/issues/new/?title=[Feedback]+{title}+-+{url}\" target=\"_blank\" rel=\"noopener\">additional feedback</a>."
 }

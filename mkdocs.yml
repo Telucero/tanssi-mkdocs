@@ -137,6 +137,37 @@ extra:
     - name: Português
       lang: pt
       link: /pt/
+  nav_translations:
+    es:
+      - page: learn/tanssi/index.md
+        title: Introducción a Tanssi
+        icon: octicons-star-24
+      - page: learn/framework/index.md
+        title: Marco de desarrollo de redes
+        icon: octicons-code-24
+      - page: learn/decentralized-networks/index.md
+        title: Redes impulsadas por Tanssi
+        icon: octicons-workflow-24
+    fr:
+      - page: learn/tanssi/index.md
+        title: Introduction à Tanssi
+        icon: octicons-star-24
+      - page: learn/framework/index.md
+        title: Cadre de développement réseau
+        icon: octicons-code-24
+      - page: learn/decentralized-networks/index.md
+        title: Réseaux propulsés par Tanssi
+        icon: octicons-workflow-24
+    pt:
+      - page: learn/tanssi/index.md
+        title: Introdução ao Tanssi
+        icon: octicons-star-24
+      - page: learn/framework/index.md
+        title: Framework de desenvolvimento de redes
+        icon: octicons-code-24
+      - page: learn/decentralized-networks/index.md
+        title: Redes impulsionadas pelo Tanssi
+        icon: octicons-workflow-24
   generator: false
   social:
     - icon: fontawesome/brands/x-twitter
