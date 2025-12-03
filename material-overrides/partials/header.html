@@ -34,13 +34,13 @@
       {% include "partials/tabs.html" %}
     {% endif %}
     <div class="md-header__buttons">
-      {% include "partials/language.html" %}
       {% if "material/search" in config["plugins"] %}
-        <label class="md-header__button md-icon" for="__search">
-          {% include ".icons/material/magnify.svg" %}
-        </label>
-        {% include "partials/search.html" %}
+      <label class="md-header__button md-icon" for="__search">
+        {% include ".icons/material/magnify.svg" %}
+      </label>
+      {% include "partials/search.html" %}
       {% endif %}
+      {% include "partials/language.html" %}
       {% if config.theme.palette and not config.theme.palette is mapping %}
         <form class="md-header__option" data-md-component="palette">
           {% for option in config.theme.palette %}

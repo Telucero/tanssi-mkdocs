@@ -61,7 +61,6 @@ validation:
   unrecognized_links: ignore
 exclude_docs: README.md
 plugins:
-  - search
   - i18n:
       docs_structure: folder
       fallback_to_default: true
@@ -70,39 +69,21 @@ plugins:
           name: English
           default: true
           build: true
-        - locale: es
-          name: Español
-          build: true
-          nav_translations:
-            Home: Inicio
-            Builders: Constructores
-            Learn: Aprender
-            Node Operators: Operadores de nodos
-            AI Resources: Recursos de IA
-            About: Acerca de
-            About Tanssi: Acerca de Tanssi
-        - locale: fr
-          name: Français
-          build: true
-          nav_translations:
-            Home: Accueil
-            Builders: Constructeurs
-            Learn: Apprendre
-            Node Operators: Opérateurs de nœuds
-            AI Resources: Ressources IA
-            About: À propos
-            About Tanssi: À propos de Tanssi
         - locale: pt
           name: Português
           build: true
           nav_translations:
-            Home: Início
-            Builders: Construtores
+            Builders: Builders
             Learn: Aprender
             Node Operators: Operadores de Nós
             AI Resources: Recursos IA
             About: Sobre
             About Tanssi: Sobre o Tanssi
+  - search
+  - macros:
+      include_yaml:
+        - tanssi-docs/variables.yml
+        - tanssi-docs/locale/pt.yml 
   - awesome-nav
   - git-revision-date-localized:
       enable_creation_date: true
@@ -128,36 +109,10 @@ extra:
     - name: English
       lang: en
       link: /
-    - name: Español
-      lang: es
-      link: /es/
-    - name: Français
-      lang: fr
-      link: /fr/
     - name: Português
       lang: pt
       link: /pt/
   nav_translations:
-    es:
-      - page: learn/tanssi/index.md
-        title: Introducción a Tanssi
-        icon: octicons-star-24
-      - page: learn/framework/index.md
-        title: Marco de desarrollo de redes
-        icon: octicons-code-24
-      - page: learn/decentralized-networks/index.md
-        title: Redes impulsadas por Tanssi
-        icon: octicons-workflow-24
-    fr:
-      - page: learn/tanssi/index.md
-        title: Introduction à Tanssi
-        icon: octicons-star-24
-      - page: learn/framework/index.md
-        title: Cadre de développement réseau
-        icon: octicons-code-24
-      - page: learn/decentralized-networks/index.md
-        title: Réseaux propulsés par Tanssi
-        icon: octicons-workflow-24
     pt:
       - page: learn/tanssi/index.md
         title: Introdução ao Tanssi
