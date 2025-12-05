@@ -31,7 +31,7 @@
                               {% set icon_seed = segments[0] %}
                             {% endif %}
                           {% endif %}
-                          {% set icon_url = "/assets/images/dropdown-icons/" + icon_seed + ".webp" %}
+                          {% set icon_url = ("assets/images/dropdown-icons/" + icon_seed + ".webp") | url %}
                           <img class="dropdown-icon" src="{{ icon_url }}" alt="{{ section_item.title }}" loading="lazy">
                         </div>
                         <div class="text-col">
@@ -72,7 +72,7 @@
                               {% set icon_slug = 'tanssi-testnet' %}
                             {% endif %}
                           {% endif %}
-                          {% set icon_url = "/assets/images/dropdown-icons/" + icon_slug + ".webp" %}
+                          {% set icon_url = ("assets/images/dropdown-icons/" + icon_slug + ".webp") | url %}
                           <img class="dropdown-icon" src="{{ icon_url }}" alt="{{ section_item.title }}" loading="lazy">
                         </div>
                         <div class="text-col">
