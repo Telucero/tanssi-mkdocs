@@ -10,7 +10,7 @@
 
 {%- block htmltitle -%} 
   {%- if page.is_homepage -%} 
-    <title>Documentation for the Tanssi Network</title> 
+    <title>{{ lang.t('meta.home_title') }}</title> 
   {%- elif page and page.meta and page.meta.title -%} 
     <title>{{ page.meta.title }} | {{ config.site_name }}</title> 
   {%- elif page and page.title and not page.is_homepage -%} 
@@ -79,6 +79,8 @@
           <div class="feedback-section">
             {% include "partials/feedback.html" %}
           </div>
+
+          <div class="divider"></div>
 
           {#- Edit this Page Section -#}
           <div class="edit-section">
