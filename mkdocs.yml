@@ -72,13 +72,6 @@ plugins:
         - locale: pt
           name: Português
           build: true
-          nav_translations:
-            Builders: Builders
-            Learn: Aprender
-            Node Operators: Operadores de Nós
-            AI Resources: Recursos IA
-            About: Sobre
-            About Tanssi: Sobre o Tanssi
   - search
   - macros:
       include_yaml:
@@ -105,17 +98,6 @@ plugins:
           - assets/stylesheets/index-page.css
 extra:
   home_url: https://tanssi.network/
-  nav_translations:
-    pt:
-      - page: learn/tanssi/index.md
-        title: Introdução ao Tanssi
-        icon: octicons-star-24
-      - page: learn/framework/index.md
-        title: Framework de desenvolvimento de redes
-        icon: octicons-code-24
-      - page: learn/decentralized-networks/index.md
-        title: Redes impulsionadas pelo Tanssi
-        icon: octicons-workflow-24
   generator: false
   social:
     - icon: fontawesome/brands/x-twitter
