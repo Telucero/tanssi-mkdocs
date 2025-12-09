@@ -4,6 +4,8 @@ import re
 from pathlib import Path
 
 import yaml
+import json
+import re
 from babel.messages.pofile import read_po
 from babel.messages.mofile import write_mo
 from babel.support import Translations
@@ -118,39 +120,63 @@ def on_page_context(context, page, config, nav):
 
 def on_post_page(output, page, config):
     """
-    Adjust Material's base path so locale pages resolve assets/search inside their locale.
+    Adjust Material's base path so locale pages resolve assets/search inside their locale,
+    and render simple trans() placeholders left in snippets.
     """
     i18n = config.plugins.get("i18n")
-    if not i18n or not page or not hasattr(page.file, "locale"):
-        return output
+    if i18n and page:
+        default_lang = next(
+            (lang.locale for lang in i18n.config.languages if getattr(lang, "default", False)),
+            config.get("theme", {}).get("language", "en"),
+        )
+        page_locale = getattr(page.file, "locale", None) or default_lang
 
-    default_lang = next(
-        (lang.locale for lang in i18n.config.languages if getattr(lang, "default", False)),
-        config.get("theme", {}).get("language", "en"),
-    )
-    page_locale = page.file.locale or default_lang
-    if page_locale == default_lang:
-        return output
+        # Adjust base for locale pages
+        if page_locale != default_lang:
+            parts = [p for p in (page.url or "").split("/") if p]
+            if parts and parts[0] == page_locale:
+                depth = max(len(parts) - 1, 0)
+            else:
+                depth = len(parts)
+            new_base = "../" * depth or "."
 
-    parts = [p for p in (page.url or "").split("/") if p]
-    if parts and parts[0] == page_locale:
-        depth = max(len(parts) - 1, 0)
-    else:
-        depth = len(parts)
-    new_base = "../" * depth or "."
+            m = re.search(r'(<script id="__config" type="application/json">)(.*?)(</script>)', output, flags=re.S)
+            if m:
+                try:
+                    cfg = json.loads(m.group(2))
+                    cfg["base"] = new_base
+                    new_json = json.dumps(cfg, separators=(",", ":"))
+                    output = output[: m.start(2)] + new_json + output[m.end(2) :]
+                except Exception:
+                    pass
 
-    m = re.search(r'(<script id="__config" type="application/json">)(.*?)(</script>)', output, flags=re.S)
-    if not m:
-        return output
+        # Render inline trans() placeholders left in snippets
+        translator = _build_translator(config)
+        lang = page_locale
 
-    try:
-        cfg = json.loads(m.group(2))
-    except Exception:
-        return output
+        def replace_trans(match):
+            key = match.group(1).strip()
+            return translator(key, lang=lang)
 
-    cfg["base"] = new_base
-    new_json = json.dumps(cfg, separators=(",", ":"))
-    return output[: m.start(2)] + new_json + output[m.end(2) :]
+        output = re.sub(r"{{\s*trans\(\s*['\"]([^'\"]+)['\"]\s*\)\s*}}", replace_trans, output)
+
+        # Inject external link modal strings for JS
+        strings = {
+            "header": translator("external_link_modal.header", lang=lang),
+            "message": translator("external_link_modal.message", lang=lang),
+            "cancel": translator("external_link_modal.cancel", lang=lang),
+            "continue": translator("external_link_modal.continue", lang=lang),
+        }
+        payload = json.dumps({lang: strings}, ensure_ascii=False)
+        injection = f'<script>window.__externalLinkModalStrings={payload};</script>'
+        head_close = output.find("</head>")
+        if head_close != -1:
+            output = output[:head_close] + injection + output[head_close:]
+        else:
+            # fallback to prepending
+            output = injection + output
+
+    return output
 
 
 @event_priority(-1000)
