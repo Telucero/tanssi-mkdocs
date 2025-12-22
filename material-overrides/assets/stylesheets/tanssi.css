@@ -591,13 +591,21 @@ details.function,
 }
 
 /* Styling for the Copy to Clipboard message */
-.md-clipboard {
+.md-code__button {
   color: var(--md-accent-fg-color);
 }
 
-.md-clipboard:focus,
-.md-clipboard:hover {
+.md-code__button:focus,
+.md-code__button:hover {
   color: var(--md-clipboard-bg-color);
+}
+
+.md-code__nav {
+  background-color: transparent;
+}
+
+pre:hover > .md-code__nav {
+  background: transparent;
 }
 
 .md-dialog {
