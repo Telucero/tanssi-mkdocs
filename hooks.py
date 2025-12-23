@@ -297,9 +297,18 @@ def on_post_build(config):
             return not any(location.startswith(f"{lang}/") for lang in languages if lang != default_lang)
         return location.startswith(f"{locale}/")
 
+    def _normalize_location(doc, locale):
+        new_doc = dict(doc)
+        if locale != default_lang:
+            prefix = f"{locale}/"
+            location = new_doc.get("location", "")
+            if location.startswith(prefix):
+                new_doc["location"] = location[len(prefix) :]
+        return new_doc
+
     # write per-locale indexes; overwrite the root with default only
     for locale in languages:
-        filtered_docs = [doc for doc in docs if is_lang_doc(doc, locale)]
+        filtered_docs = [_normalize_location(doc, locale) for doc in docs if is_lang_doc(doc, locale)]
         if not filtered_docs:
             continue
 
