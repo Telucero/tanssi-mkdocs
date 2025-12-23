@@ -532,33 +532,59 @@ def on_post_build(config):
             localized = _strip_404_lang_injection(localized)
             # Prefer a localized navigation block from the locale's index.html so the header renders in the right language
             localized_index = site_dir / ("index.html" if locale == default_lang else f"{locale}/index.html")
-            header_fragment = footer_fragment = None
+            header_fragment = footer_fragment = config_fragment = search_fragment = None
             if localized_index.exists():
                 try:
                     idx_html = localized_index.read_text(encoding="utf-8")
                     header_match = re.search(r'(<header[^>]*class="[^"]*md-header[^"]*"[^>]*>.*?</header>)', idx_html, re.S)
                     footer_match = re.search(r'(<footer[^>]*class="[^"]*md-footer[^"]*"[^>]*>.*?</footer>)', idx_html, re.S)
+                    config_match = re.search(
+                        r'(<script id="__config" type="application/json">.*?</script>)',
+                        idx_html,
+                        re.S,
+                    )
+                    search_match = re.search(
+                        r'(<script id="__(?:md_)?search" type="application/json">.*?</script>)',
+                        idx_html,
+                        re.S,
+                    )
                     header_fragment = header_match.group(1) if header_match else None
                     footer_fragment = footer_match.group(1) if footer_match else None
+                    config_fragment = config_match.group(1) if config_match else None
+                    search_fragment = search_match.group(1) if search_match else None
                 except Exception:
-                    header_fragment = footer_fragment = None
+                    header_fragment = footer_fragment = config_fragment = search_fragment = None
             if header_fragment:
                 localized = re.sub(
                     r'<header[^>]*class="[^"]*md-header[^"]*"[^>]*>.*?</header>',
-                    header_fragment,
+                    lambda _m, frag=header_fragment: frag,
                     localized,
                     flags=re.S,
                 )
             if footer_fragment:
                 localized = re.sub(
                     r'<footer[^>]*class="[^"]*md-footer[^"]*"[^>]*>.*?</footer>',
-                    footer_fragment,
+                    lambda _m, frag=footer_fragment: frag,
+                    localized,
+                    flags=re.S,
+                )
+            if config_fragment:
+                localized = re.sub(
+                    r'<script id="__config" type="application/json">.*?</script>',
+                    lambda _m, frag=config_fragment: frag,
+                    localized,
+                    flags=re.S,
+                )
+            if search_fragment:
+                localized = re.sub(
+                    r'<script id="__(?:md_)?search" type="application/json">.*?</script>',
+                    lambda _m, frag=search_fragment: frag,
                     localized,
                     flags=re.S,
                 )
 
-            # Ensure base path resolves assets correctly per locale
-            base_value = "." if locale == default_lang else ".."
+            # 404 pages live at the locale root, so base should be the current dir
+            base_value = "."
             localized = _replace_config_base(localized, base_value)
 
             head_close = localized.find("</head>")
