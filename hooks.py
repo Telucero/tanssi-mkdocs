@@ -377,6 +377,19 @@ def on_post_build(config):
     return link ? link.getAttribute("href") || "" : "";
   }}
 
+  function resolveLocaleRoot(locale) {{
+    var href = getLocaleLink(locale);
+    if (!href) return "/";
+    try {{
+      var resolved = new URL(href, window.location.href);
+      var path = resolved.pathname || "/";
+      if (!path.endsWith("/")) path += "/";
+      return path;
+    }} catch (e) {{
+      return "/";
+    }}
+  }}
+
   function resolveIndexPath(locale) {{
     var href = getLocaleLink(locale);
     if (!href) return "index.html";
@@ -391,16 +404,58 @@ def on_post_build(config):
     }}
   }}
 
+  function resolve404Path(locale) {{
+    var root = resolveLocaleRoot(locale);
+    if (!root) return "/404.html";
+    if (!root.endsWith("/")) root += "/";
+    return root + "404.html";
+  }}
+
+  function resolveUrl(rootPath, value) {{
+    if (!value) return value;
+    if (/^(?:[a-z][a-z0-9+.-]*:|\\/\\/)/i.test(value)) return value;
+    if (value[0] === "#") return value;
+    try {{
+      var resolved = new URL(value, window.location.origin + rootPath);
+      return resolved.pathname + resolved.search + resolved.hash;
+    }} catch (e) {{
+      return value;
+    }}
+  }}
+
+  function normalizeShellLinks(container, rootPath) {{
+    if (!container) return;
+    var withHref = container.querySelectorAll("[href]");
+    withHref.forEach(function(el) {{
+      var href = el.getAttribute("href");
+      var resolved = resolveUrl(rootPath, href);
+      if (resolved !== href) el.setAttribute("href", resolved);
+    }});
+    var withSrc = container.querySelectorAll("[src]");
+    withSrc.forEach(function(el) {{
+      var src = el.getAttribute("src");
+      var resolved = resolveUrl(rootPath, src);
+      if (resolved !== src) el.setAttribute("src", resolved);
+    }});
+  }}
+
   function swapShell(locale) {{
     var indexPath = resolveIndexPath(locale);
+    var localeRoot = resolveLocaleRoot(locale);
     fetch(indexPath).then(function(resp) {{ return resp.text(); }}).then(function(html) {{
       var doc = new DOMParser().parseFromString(html, "text/html");
       var newHeader = doc.querySelector("header.md-header");
       var newFooter = doc.querySelector("footer.md-footer");
       var curHeader = document.querySelector("header.md-header");
       var curFooter = document.querySelector("footer.md-footer");
-      if (newHeader && curHeader) curHeader.replaceWith(newHeader);
-      if (newFooter && curFooter) curFooter.replaceWith(newFooter);
+      if (newHeader && curHeader) {{
+        normalizeShellLinks(newHeader, localeRoot);
+        curHeader.replaceWith(newHeader);
+      }}
+      if (newFooter && curFooter) {{
+        normalizeShellLinks(newFooter, localeRoot);
+        curFooter.replaceWith(newFooter);
+      }}
       setPicker(locale);
     }}).catch(function() {{ setPicker(locale); }});
   }}
@@ -411,11 +466,17 @@ def on_post_build(config):
     var locales = Array.isArray(data.locales) ? data.locales : [];
     var locale = pickLocale(locales, data["default"]);
     if (!locale) return;
+    var pathname = window.location.pathname || "/";
+    var target404 = resolve404Path(locale);
+    if (locale !== data["default"] && target404 && pathname !== target404) {{
+      window.location.replace(target404);
+      return;
+    }}
     var title = document.getElementById("not-found-title");
     if (title && data.titles && data.titles[locale]) {{
       title.textContent = data.titles[locale];
     }}
-    swapShell(locale);
+    setPicker(locale);
   }}
 
   if (document.readyState === "loading") {{
@@ -444,7 +505,13 @@ def on_post_build(config):
         )
         html_404 = _strip_feedback_block(html_404)
         html_404 = _strip_404_lang_injection(html_404)
-        base_404.write_text(html_404, encoding="utf-8")
+        base_html = html_404
+        head_close = base_html.find("</head>")
+        if head_close != -1:
+            base_html = base_html[:head_close] + lang_injection + base_html[head_close:]
+        else:
+            base_html = lang_injection + base_html
+        base_404.write_text(base_html, encoding="utf-8")
         for lang_cfg in i18n_plugin.config.languages:
             locale = lang_cfg.locale
             translated_title = title_map.get(locale, "404")
