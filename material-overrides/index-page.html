@@ -19,6 +19,12 @@
           {% set seen_links = namespace(paths=[]) %}
           {% set nav_overrides = config.extra.nav_translations if config.extra is defined and config.extra.nav_translations is defined else {} %}
           {% set overrides = nav_overrides.get(current_lang, []) %}
+          {% set overrides_by_page = namespace(map={}) %}
+          {% for override in overrides %}
+            {% if override.page %}
+              {% set _ = overrides_by_page.map.update({override.page: override}) %}
+            {% endif %}
+          {% endfor %}
           {% for nav_child in element[1:] %}
             {% set description = "" %}
             {% set icon = "" %}
@@ -38,7 +44,7 @@
             {% if tracked_path in seen_links.paths %}
               {% continue %}
             {% endif %}
-            {% set seen_links.paths = seen_links.paths + [tracked_path] %}
+            {% set _ = seen_links.paths.append(tracked_path) %}
 
             {% if ".index" in page.url %}
               {% set subsection_path = "/" + subsection_path %}
@@ -51,23 +57,22 @@
                 <div class="card-header">                
             {% set icon_to_render = icon %}
             {% set title_to_render = nav_child.title %}
-            {% if nav_child.file and overrides %}
+            {% if nav_child.file and overrides_by_page.map %}
               {% set file_src = nav_child.file.src_path %}
               {% if file_src.startswith(current_lang ~ '/') %}
                 {% set normalized_src = file_src[(current_lang|length + 1):] %}
               {% else %}
                 {% set normalized_src = file_src %}
               {% endif %}
-              {% for override in overrides %}
-                {% if override.page == normalized_src %}
-                  {% if override.icon %}
-                    {% set icon_to_render = override.icon %}
-                  {% endif %}
-                  {% if override.title %}
-                    {% set title_to_render = override.title %}
-                  {% endif %}
+              {% set override = overrides_by_page.map.get(normalized_src) %}
+              {% if override %}
+                {% if override.icon %}
+                  {% set icon_to_render = override.icon %}
                 {% endif %}
-              {% endfor %}
+                {% if override.title %}
+                  {% set title_to_render = override.title %}
+                {% endif %}
+              {% endif %}
             {% endif %}
 
             {% if icon_to_render %}

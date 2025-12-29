@@ -77,7 +77,7 @@ plugins:
   - macros:
       include_yaml:
         - tanssi-docs/variables.yml
-        - tanssi-docs/locale/pt.yml 
+        - tanssi-docs/locale/pt.yml
   - awesome-nav
   - git-revision-date-localized:
       enable_creation_date: true

@@ -183,6 +183,7 @@ def on_post_page(output, page, config):
                     new_json = json.dumps(cfg, separators=(",", ":"))
                     output = output[: m.start(2)] + new_json + output[m.end(2) :]
                 except Exception:
+                    # Best-effort update; regex fallback below handles malformed JSON.
                     pass
 
         # Render inline trans() placeholders left in snippets
@@ -212,7 +213,13 @@ def on_post_page(output, page, config):
             "continue": translator("external_link_modal.continue", lang=lang),
         }
         payload = json.dumps({lang: strings}, ensure_ascii=False)
-        injections = [f'<script>window.__externalLinkModalStrings={payload};</script>']
+        # Prevent closing the script tag early if translations contain "</".
+        safe_payload = payload.replace("</", "<\\/")
+        injections = [
+            '<script id="external-link-modal-strings" type="application/json">'
+            + safe_payload
+            + "</script>"
+        ]
 
         head_close = output.find("</head>")
         if head_close != -1:
@@ -332,8 +339,10 @@ def on_post_build(config):
         "titles": title_map,
     }
     locale_payload_json = json.dumps(locale_payload, ensure_ascii=False)
+    # Prevent closing the script tag early if translations contain "</".
+    safe_locale_payload_json = locale_payload_json.replace("</", "<\\/")
 
-    lang_injection = f"""<script id="lang-404-data" type="application/json">{locale_payload_json}</script>
+    lang_injection = f"""<script id="lang-404-data" type="application/json">{safe_locale_payload_json}</script>
 <script id="lang-404">
 (function() {{
   function getData() {{
@@ -442,7 +451,10 @@ def on_post_build(config):
   function swapShell(locale) {{
     var indexPath = resolveIndexPath(locale);
     var localeRoot = resolveLocaleRoot(locale);
-    fetch(indexPath).then(function(resp) {{ return resp.text(); }}).then(function(html) {{
+    fetch(indexPath).then(function(resp) {{
+      if (!resp.ok) throw new Error("Failed to load locale shell");
+      return resp.text();
+    }}).then(function(html) {{
       var doc = new DOMParser().parseFromString(html, "text/html");
       var newHeader = doc.querySelector("header.md-header");
       var newFooter = doc.querySelector("footer.md-footer");
