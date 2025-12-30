@@ -4,6 +4,7 @@ from pathlib import Path
 import yaml
 import json
 import re
+import polib
 from babel.messages.pofile import read_po
 from babel.messages.mofile import write_mo
 from babel.support import Translations
@@ -111,7 +112,49 @@ def _sync_theme_translations(config):
         )
 
 
+def _sync_gettext_translations(config):
+    docs_dir = Path(config.get("docs_dir", "docs"))
+    yaml_translations = _load_yaml_translations(docs_dir / "locale")
+    if not yaml_translations:
+        return
+
+    i18n_dir = docs_dir / "i18n"
+    for locale, data in yaml_translations.items():
+        po_dir = i18n_dir / locale / "LC_MESSAGES"
+        po_dir.mkdir(parents=True, exist_ok=True)
+        po_path = po_dir / "messages.po"
+
+        if po_path.exists():
+            po = polib.pofile(str(po_path))
+        else:
+            po = polib.POFile()
+            po.metadata = {
+                "Project-Id-Version": "tanssi-docs",
+                "Content-Type": "text/plain; charset=UTF-8",
+                "Content-Transfer-Encoding": "8bit",
+                "Language": locale,
+            }
+
+        changed = False
+        for key, value in data.items():
+            if value is None or isinstance(value, (dict, list)):
+                continue
+            msgstr = str(value)
+            entry = po.find(key)
+            if entry is None:
+                po.append(polib.POEntry(msgid=key, msgstr=msgstr))
+                changed = True
+            elif entry.msgstr != msgstr:
+                entry.msgstr = msgstr
+                changed = True
+
+        if changed:
+            po.save(str(po_path))
+
+
+@event_priority(1000)
 def on_config(config):
+    _sync_gettext_translations(config)
     _sync_theme_translations(config)
     return config
 
