@@ -2,11 +2,12 @@ site_name: Tanssi Docs
 site_url: https://docs.tanssi.network/
 home_url: https://tanssi.network/
 edit_uri: https://github.com/moondance-labs/tanssi-docs/edit/main/
-#site_dir: /var/www/tanssi-docs-static
+site_dir: /var/www/tanssi-docs-static
 docs_dir: tanssi-docs
-copyright: © 2025 Tanssi Foundation. All Rights Reserved.
+copyright: © 2026 Tanssi Foundation. All Rights Reserved.
 hooks:
   - hooks.py
+copyright: © 2026 Tanssi Foundation. All Rights Reserved.
 extra_javascript:
   - /js/externalLinkModal.js
   - /js/fixCreatedDate.js
