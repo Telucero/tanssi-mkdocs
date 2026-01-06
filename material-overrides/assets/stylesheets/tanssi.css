@@ -424,6 +424,16 @@ a.md-search-result__link:hover {
 .md-header__inner {
   max-width: 80rem;
   justify-content: space-between;
+  --header-hamburger-width: 48px;
+  --header-grid-padding: var(--md-grid-padding, 0.8rem);
+  --header-left-offset: max(0px, (100vw - 80rem) / 2);
+  --header-row-width: calc(
+    var(--header-left-offset) + var(--header-grid-padding) + var(--header-hamburger-width)
+  );
+}
+
+.md-header__inner > .row {
+  max-width: var(--header-row-width);
 }
 
 .md-header__buttons {
