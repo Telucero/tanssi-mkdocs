@@ -7,7 +7,6 @@ docs_dir: tanssi-docs
 copyright: © 2026 Tanssi Foundation. All Rights Reserved.
 hooks:
   - hooks.py
-copyright: © 2026 Tanssi Foundation. All Rights Reserved.
 extra_javascript:
   - /js/externalLinkModal.js
   - /js/fixCreatedDate.js
