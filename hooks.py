@@ -290,19 +290,14 @@ def on_post_build(config):
     if not default_lang:
         default_lang = i18n_plugin.config.default_language
 
-    custom_dir = config.get("theme", {}).get("custom_dir")
-    if custom_dir:
-        custom_path = Path(custom_dir)
-        if not custom_path.is_absolute():
-            custom_path = Path(__file__).resolve().parent / custom_path
-        source = custom_path / "assets" / "images" / "home-background.mp4"
-        if source.exists():
-            for lang in languages:
-                if lang == default_lang:
-                    continue
-                target = site_dir / lang / "assets" / "images" / "home-background.mp4"
-                target.parent.mkdir(parents=True, exist_ok=True)
-                copy2(source, target)
+    source = site_dir / "assets" / "images" / "home-background.mp4"
+    if source.exists():
+        for lang in languages:
+            if lang == default_lang:
+                continue
+            target = site_dir / lang / "assets" / "images" / "home-background.mp4"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            copy2(source, target)
 
     index_path = site_dir / "search" / "search_index.json"
     if not index_path.exists():
