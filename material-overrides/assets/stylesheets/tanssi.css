@@ -729,13 +729,21 @@ details.function,
 }
 
 /* Styling for the Copy to Clipboard message */
-.md-clipboard {
+.md-code__button {
   color: var(--md-accent-fg-color);
 }
 
-.md-clipboard:focus,
-.md-clipboard:hover {
+.md-code__button:focus,
+.md-code__button:hover {
   color: var(--md-clipboard-bg-color);
+}
+
+.md-code__nav {
+  background-color: transparent;
+}
+
+pre:hover > .md-code__nav {
+  background: transparent;
 }
 
 .md-dialog {
@@ -894,8 +902,10 @@ details.function,
 
 a.md-content__button.md-icon {
   margin: 0 auto;
+  font-size: 12px;
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 a.md-content__button.md-icon:hover {
