@@ -1,4 +1,5 @@
 import io
+from shutil import copy2
 from pathlib import Path
 
 import yaml
@@ -280,10 +281,6 @@ def on_post_build(config):
     and produce localized 404 pages with the proper header/footer and language toggle.
     """
     site_dir = Path(config["site_dir"])
-    index_path = site_dir / "search" / "search_index.json"
-    if not index_path.exists():
-        return
-
     i18n_plugin = config.plugins.get("i18n")
     if not i18n_plugin:
         return
@@ -292,6 +289,24 @@ def on_post_build(config):
     default_lang = next((lang.locale for lang in i18n_plugin.config.languages if lang.default), None)
     if not default_lang:
         default_lang = i18n_plugin.config.default_language
+
+    custom_dir = config.get("theme", {}).get("custom_dir")
+    if custom_dir:
+        custom_path = Path(custom_dir)
+        if not custom_path.is_absolute():
+            custom_path = Path(__file__).resolve().parent / custom_path
+        source = custom_path / "assets" / "images" / "home-background.mp4"
+        if source.exists():
+            for lang in languages:
+                if lang == default_lang:
+                    continue
+                target = site_dir / lang / "assets" / "images" / "home-background.mp4"
+                target.parent.mkdir(parents=True, exist_ok=True)
+                copy2(source, target)
+
+    index_path = site_dir / "search" / "search_index.json"
+    if not index_path.exists():
+        return
 
     def _replace_config_base(doc_html: str, base_value: str) -> str:
         """
