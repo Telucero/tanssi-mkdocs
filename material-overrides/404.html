@@ -1,11 +1,10 @@
 {#-
-    This file was automatically generated - do not edit
-  -#}
+  This file is intentionally minimal; language-specific 404s are produced by hooks.
+-#}
 
 {% extends "main.html" %}
 {% block content %}
-  <h1 class="not-found">404 - Not found</h1>
-{% endblock %}
-  
-{% block site_nav %}
+  <h1 id="not-found-title" class="not-found">
+    {{ trans("error.404_title", lang=page.lang if page is defined else None) }}
+  </h1>
 {% endblock %}

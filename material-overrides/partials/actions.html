@@ -1,22 +1,47 @@
 {#-
-    This file was automatically generated - do not edit
-  -#}
-  {% if page.edit_url %}
-    {% if "content.action.edit" in features %}
-      <a href="{{ page.edit_url }}" title="{{ lang.t('action.edit') }}" class="md-content__button md-icon">
-        {% set icon = config.theme.icon.edit or "material/file-edit-outline" %}
-        {% include ".icons/" ~ icon ~ ".svg" %} Edit this page
-      </a>
-    {% endif %}
-    {% if "content.action.view" in features %}
-      {% if "/blob/" in page.edit_url %}
-        {% set part = "blob" %}
-      {% else %}
-        {% set part = "edit" %}
-      {% endif %}
-      <a href="{{ page.edit_url | replace(part, 'raw') }}" title="{{ lang.t('action.view') }}" class="md-content__button md-icon">
-        {% set icon = config.theme.icon.view or "material/file-eye-outline" %}
-        {% include ".icons/" ~ icon ~ ".svg" %}
-      </a>
-    {% endif %}
+  This file was automatically generated - do not edit
+-#}
+{% macro _noop(key, lang_code=None) -%}{{ key }}{%- endmacro %}
+{% set translator = _noop %}
+{% set translator_takes_lang = false %}
+{% if trans is defined %}
+  {% set translator = trans %}
+  {% set translator_takes_lang = true %}
+{% elif lang is defined %}
+  {% set translator = lang.t %}
+{% endif %}
+{% set current_lang = 'en' %}
+{% if page is defined and page.lang %}
+  {% set current_lang = page.lang %}
+{% elif config.theme.language %}
+  {% set current_lang = config.theme.language %}
+{% endif %}
+{% macro t(key) -%}
+  {%- if translator_takes_lang -%}
+    {{ translator(key, current_lang) }}
+  {%- else -%}
+    {{ translator(key) }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% if page.edit_url %}
+  {% if "content.action.edit" in features %}
+    <a href="{{ page.edit_url }}" title="{{ t('action.edit') }}" class="md-content__button md-icon" rel="edit">
+      {% set icon = config.theme.icon.edit or "material/file-edit-outline" %}
+      {% include ".icons/" ~ icon ~ ".svg" %}
+      <span class="md-content__button-label">{{ t('action.edit') }}</span>
+    </a>
   {% endif %}
+  {% if "content.action.view" in features %}
+    {% if "/blob/" in page.edit_url %}
+      {% set part = "blob" %}
+    {% else %}
+      {% set part = "edit" %}
+    {% endif %}
+    <a href="{{ page.edit_url | replace(part, 'raw') }}" title="{{ t('action.view') }}" class="md-content__button md-icon">
+      {% set icon = config.theme.icon.view or "material/file-eye-outline" %}
+      {% include ".icons/" ~ icon ~ ".svg" %}
+      <span class="md-content__button-label">{{ t('action.view') }}</span>
+    </a>
+  {% endif %}
+{% endif %}

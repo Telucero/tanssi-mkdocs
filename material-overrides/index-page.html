@@ -16,20 +16,36 @@
         <!-- render subsection content -->
         {% if nav_item.is_page %}
           <div class="subsection-wrapper">
-          {% set description = "" %}
-          {% set icon = "" %}          
-          {% for nav_item in element[1:] %}
-            {% if nav_item.is_section %}
-              {% set subsection_path = nav_item.children[0].url %}
-              {% set description = nav_item.children[0].meta.description %}
-              {% set icon = nav_item.children[0].meta.icon %}
+          {% set seen_links = namespace(paths=[]) %}
+          {% set nav_overrides = config.extra.nav_translations if config.extra is defined and config.extra.nav_translations is defined else {} %}
+          {% set overrides = nav_overrides.get(current_lang, []) %}
+          {% set overrides_by_page = namespace(map={}) %}
+          {% for override in overrides %}
+            {% if override.page %}
+              {% set _ = overrides_by_page.map.update({override.page: override}) %}
+            {% endif %}
+          {% endfor %}
+          {% for nav_child in element[1:] %}
+            {% set description = "" %}
+            {% set icon = "" %}
+            {% if nav_child.is_section %}
+              {% set subsection_path = nav_child.children[0].url %}
+              {% set description = nav_child.children[0].meta.description %}
+              {% set icon = nav_child.children[0].meta.icon %}
             {% else %}
-              {% set subsection_path = nav_item.url %}
-              {% if nav_item.meta %}
-                {% set description = nav_item.meta.description %}
-                {% set icon = nav_item.meta.icon %}
+              {% set subsection_path = nav_child.url %}
+              {% if nav_child.meta %}
+                {% set description = nav_child.meta.description %}
+                {% set icon = nav_child.meta.icon %}
               {% endif %}
             {% endif %}
+
+            {% set tracked_path = subsection_path %}
+            {% if tracked_path in seen_links.paths %}
+              {% continue %}
+            {% endif %}
+            {% set _ = seen_links.paths.append(tracked_path) %}
+
             {% if ".index" in page.url %}
               {% set subsection_path = "/" + subsection_path %}
             {% else %}
@@ -39,29 +55,49 @@
             <div class="card">
               <a href="{{ subsection_path }}">
                 <div class="card-header">                
-                {% if icon %}
-                  {% set icon_parts = icon.split('-', 1) %}
-                  {% set icon_path = icon_parts[0] + '/' + icon_parts[1] if icon_parts|length > 1 else icon_parts[0] %}
-                  {% include ".icons/" + icon_path + ".svg" %}      
+            {% set icon_to_render = icon %}
+            {% set title_to_render = nav_child.title %}
+            {% if nav_child.file and overrides_by_page.map %}
+              {% set file_src = nav_child.file.src_path %}
+              {% if file_src.startswith(current_lang ~ '/') %}
+                {% set normalized_src = file_src[(current_lang|length + 1):] %}
+              {% else %}
+                {% set normalized_src = file_src %}
+              {% endif %}
+              {% set override = overrides_by_page.map.get(normalized_src) %}
+              {% if override %}
+                {% if override.icon %}
+                  {% set icon_to_render = override.icon %}
                 {% endif %}
-                  <h2 class="title">{{ nav_item.title }}</h2> 
+                {% if override.title %}
+                  {% set title_to_render = override.title %}
+                {% endif %}
+              {% endif %}
+            {% endif %}
+
+            {% if icon_to_render %}
+              {% set icon_parts = icon_to_render.split('-', 1) %}
+              {% set icon_path = icon_parts[0] + '/' + icon_parts[1] if icon_parts|length > 1 else icon_parts[0] %}
+              {% include ".icons/" + icon_path + ".svg" %}      
+            {% endif %}
+                  <h2 class="title">{{ title_to_render }}</h2> 
                 </div>
                 {% if not description == "" %}
                   <p class="description">{{ description }}</p>
                 {% else %}
-                  {% if nav_item.is_link %}
-                    {% if '#' in nav_item.url %}
-                      {% set nav_item_url = nav_item.url.split('#')[0] %}
+                  {% if nav_child.is_link %}
+                    {% if '#' in nav_child.url %}
+                      {% set nav_item_url = nav_child.url.split('#')[0] %}
                     {% else %}
-                      {% set nav_item_url = nav_item.url %}
+                      {% set nav_item_url = nav_child.url %}
                     {% endif %}
 
                     {% if nav_item_url.startswith('/') %}
                       {% set nav_item_url = nav_item_url[1:] %}
                     {% endif %}
 
-                    {% for nav_child in nav.children %}
-                      {{ find_desc_for_linked_pages(nav_child, nav_item_url, description) }}
+                    {% for nav_section_child in nav.children %}
+                      {{ find_desc_for_linked_pages(nav_section_child, nav_item_url, description) }}
                     {% endfor %}
                   {% endif %}
                 {% endif %}

@@ -2,6 +2,29 @@
   This file was automatically generated - do not edit
 -#}
 
+{% macro _noop(key, lang_code=None) -%}{{ key }}{%- endmacro %}
+{% set translator = _noop %}
+{% set translator_takes_lang = false %}
+{% if trans is defined %}
+  {% set translator = trans %}
+  {% set translator_takes_lang = true %}
+{% elif lang is defined %}
+  {% set translator = lang.t %}
+{% endif %}
+{% set current_lang = 'en' %}
+{% if page is defined and page.lang %}
+  {% set current_lang = page.lang %}
+{% elif config.theme.language %}
+  {% set current_lang = config.theme.language %}
+{% endif %}
+
+{% macro t(key) -%}
+  {%- if translator_takes_lang -%}
+    {{ translator(key, current_lang) }}
+  {%- else -%}
+    {{ translator(key) }}
+  {%- endif -%}
+{%- endmacro %}
 
 <footer class="md-footer">
   {% if "navigation.footer" in features %}
@@ -50,7 +73,7 @@
       <div class="columns-llms-button">
           <button class="md-button border copy-llms-btn", title="{{ lang.t('clipboard.copy') }}">
             {% include ".icons/material/content-copy.svg" %} 
-            llms-full.txt
+            {{ t('footer.llms_full_label') }}
           </button>
       </div>
       {% if config.extra.social %}
@@ -58,7 +81,7 @@
       {% endif %}
       {% include "partials/copyright.html" %}
       <div class="papermoon">
-        <span>Made with 🩵 by <a href="https://papermoon.io/" target="_blank">PaperMoon</a></span>
+        <span>{{ t('footer.made_with_html') | safe }}</span>
       </div>
     </div>
   </div>
