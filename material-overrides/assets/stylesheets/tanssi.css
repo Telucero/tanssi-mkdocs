@@ -331,8 +331,6 @@ a:hover {
     background-color: var(--charcoal);
     border-radius: var(--border-radius-20);
     height: 1.5rem;
-    display: flex;
-    align-items: center;
   }
 
   [dir="ltr"] .md-search__icon[for="__search"] svg,
@@ -377,7 +375,6 @@ a:hover {
 
   .md-search__options > .md-icon {
     transition: none;
-    height: 100%;
   }
 
   [data-md-toggle="search"]:checked ~ .md-header .md-search__scrollwrap {
@@ -424,16 +421,12 @@ a.md-search-result__link:hover {
 .md-header__inner {
   max-width: 80rem;
   justify-content: space-between;
-  --header-hamburger-width: 48px;
-  --header-grid-padding: var(--md-grid-padding, 0.8rem);
-  --header-left-offset: max(0px, (100vw - 80rem) / 2);
-  --header-row-width: calc(
-    var(--header-left-offset) + var(--header-grid-padding) + var(--header-hamburger-width)
-  );
 }
 
-.md-header__inner > .row {
-  max-width: var(--header-row-width);
+@media (max-width: 360px) {
+  .md-header__inner > .row {
+    max-width: 48px;
+  }
 }
 
 .md-header__buttons {
@@ -736,21 +729,13 @@ details.function,
 }
 
 /* Styling for the Copy to Clipboard message */
-.md-code__button {
+.md-clipboard {
   color: var(--md-accent-fg-color);
 }
 
-.md-code__button:focus,
-.md-code__button:hover {
+.md-clipboard:focus,
+.md-clipboard:hover {
   color: var(--md-clipboard-bg-color);
-}
-
-.md-code__nav {
-  background-color: transparent;
-}
-
-pre:hover > .md-code__nav {
-  background: transparent;
 }
 
 .md-dialog {
@@ -911,19 +896,11 @@ a.md-content__button.md-icon {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-size: 12px;
 }
 
 a.md-content__button.md-icon:hover {
   color: var(--md-accent-fg-color);
   text-decoration: none;
-}
-
-.md-content__button-label {
-  font-size: 12px;
-  font-weight: 500;
 }
 
 .feedback-actions-container
