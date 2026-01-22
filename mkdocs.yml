@@ -8,10 +8,10 @@ copyright: © 2026 Tanssi Foundation. All Rights Reserved.
 hooks:
   - hooks.py
 extra_javascript:
-  - js/externalLinkModal.js
-  - js/fixCreatedDate.js
-  - js/clipboardCopy.js
-  - js/lang-toggle.js
+  - javascript/externalLinkModal.js
+  - javascript/fixCreatedDate.js
+  - javascript/clipboardCopy.js
+  - javascript/lang-toggle.js
 extra_css:
   - assets/stylesheets/tanssi.css
   - assets/stylesheets/termynal.css
