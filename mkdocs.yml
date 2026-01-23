@@ -89,6 +89,11 @@ plugins:
       minify_js: true
       minify_css: true
       cache_safe: true
+      js_files:
+        - javascript/externalLinkModal.js
+        - javascript/fixCreatedDate.js
+        - javascript/clipboardCopy.js
+        - javascript/lang-toggle.js
       css_files:
         - assets/stylesheets/tanssi.css
         - assets/stylesheets/termynal.css
