@@ -1,20 +1,41 @@
 {#-
     This file was automatically generated - do not edit
   -#}
+{% macro _noop(key, lang_code=None) -%}{{ key }}{%- endmacro %}
+{% set translator = _noop %}
+{% set translator_takes_lang = false %}
+{% if trans is defined %}
+  {% set translator = trans %}
+  {% set translator_takes_lang = true %}
+{% elif lang is defined %}
+  {% set translator = lang.t %}
+{% endif %}
+{% set current_lang = 'en' %}
+{% if page is defined and page.lang %}
+  {% set current_lang = page.lang %}
+{% elif config.theme.language %}
+  {% set current_lang = config.theme.language %}
+{% endif %}
+
+{% macro t(key) -%}
+  {%- if translator_takes_lang -%}
+    {{ translator(key, current_lang) }}
+  {%- else -%}
+    {{ translator(key) }}
+  {%- endif -%}
+{%- endmacro %}
+
   <div class="md-copyright">
     {% if config.copyright %}
       <div class="md-copyright__highlight">
         {{ config.copyright }}
       </div>
       <div class="network-links">
-        <a href="https://www.tanssi.network/privacy-policy" target="_blank">Privacy Policy</a>
-        <a href="https://www.tanssi.network/terms-of-use" target="_blank">Terms of Use</a>
+      <a href="https://www.tanssi.network/privacy-policy" target="_blank" rel="noopener">{{ t('footer.privacy_policy') }}</a>
+      <a href="https://www.tanssi.network/terms-of-use" target="_blank" rel="noopener">{{ t('footer.terms_of_use') }}</a>
       </div>
     {% endif %}
     {% if not config.extra.generator == false %}
-      Made with
-      <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-        Material for MkDocs
-      </a>
+      <span>{{ t('footer.material_attribution_html') | safe }}</span>
     {% endif %}
   </div>
